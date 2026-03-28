@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# STAR Story Index
 
-## Getting Started
+A personal behavioral interview prep tool. Filter and browse a library of STAR stories by competency category and keyword — designed to sit open on a second screen or phone during a video interview as a quick memory aid.
 
-First, run the development server:
+Built with Next.js, Tailwind CSS v4, and shadcn/ui. Dark mode by default.
+
+---
+
+## Running locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
+bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Building
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+bun run build
+```
 
-## Learn More
+## Adding your own stories
 
-To learn more about Next.js, take a look at the following resources:
+Edit `src/data/stories.ts`. Each story has a title, a one-line hook, one or more category tags, and the four STAR fields. The file is self-documenting — follow the existing pattern.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Available tags: `leadership`, `conflict`, `ambiguity`, `failure`, `cross-functional`, `influence`, `innovation`, `prioritization`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Hosting on Cloudflare Pages
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project is configured for deployment to [Cloudflare Pages](https://pages.cloudflare.com) via [`@cloudflare/next-on-pages`](https://github.com/cloudflare/next-on-pages).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Connect your repo
+
+1. Push this repo to GitHub
+2. In the Cloudflare dashboard, go to **Workers & Pages → Create → Pages → Connect to Git**
+3. Select your repo
+4. Set the build configuration:
+   - **Build command:** `bun run pages:build`
+   - **Build output directory:** `.vercel/output/static`
+   - **Environment variable:** `NODE_VERSION` = `20`
+5. Deploy
+
+Cloudflare Pages will automatically redeploy on every push to `main`.
+
+### Manual deploy
+
+To deploy from the command line:
+
+```bash
+bun run pages:build
+bun run deploy
+```
+
+You'll be prompted to log in to Cloudflare on first use.
