@@ -8,13 +8,11 @@ This is a personal utility, not a public product. Optimize for clarity and maint
 
 ## Tech Stack
 
-- **Framework:** Next.js (App Router, TypeScript) — same setup as the uishadcn-playground
+- **Framework:** Next.js (App Router, TypeScript)
 - **Styling:** Tailwind CSS v4 (CSS-first config via `@theme` in globals.css)
 - **Components:** shadcn/ui (new-york style, CSS variables)
 - **Package manager:** bun
 - **Deployment target:** Cloudflare Pages via `@cloudflare/next-on-pages`
-
-Copy `globals.css`, `components.json`, `lib/utils.ts`, and the root layout pattern from the uishadcn-playground as the starting point.
 
 ---
 
@@ -23,22 +21,23 @@ Copy `globals.css`, `components.json`, `lib/utils.ts`, and the root layout patte
 ```
 src/
   app/
-    globals.css           # Copy from uishadcn-playground — includes @theme, dark mode, shadcn vars
-    layout.tsx            # Minimal shell. Include next-themes ThemeProvider for dark mode toggle.
+    globals.css           # Tailwind v4 + shadcn CSS variables, light/dark themes
+    layout.tsx            # Geist font, ThemeProvider, metadata
     page.tsx              # Imports <StoryIndex /> only. No logic here.
   components/
+    providers.tsx         # "use client" ThemeProvider wrapper (next-themes, dark default)
     story-index/
-      StoryIndex.tsx      # "use client" — owns all filter/search state (useState only, no external state lib)
+      StoryIndex.tsx      # "use client" — owns all filter/search state
       StoryCard.tsx       # Single story. Uses shadcn Collapsible to expand STAR detail.
-      CategoryTabs.tsx    # shadcn Tabs — one tab per competency category + "All"
+      CategoryTabs.tsx    # Wrapping row of outline buttons, one per category + "All"
       SearchBar.tsx       # shadcn Input with a lucide Search icon prefix
-      ThemeToggle.tsx     # shadcn Button (icon) toggling light/dark via next-themes
+      ThemeToggle.tsx     # shadcn Button toggling light/dark via next-themes
     ui/                   # shadcn auto-generated components (do not hand-write these)
   data/
     stories.ts            # The ONLY file edited to add/update stories. Typed array of Story objects.
   lib/
     types.ts              # Story and Category type definitions
-    utils.ts              # cn() utility — copy from uishadcn-playground
+    utils.ts              # cn() utility
 ```
 
 ---
@@ -78,15 +77,7 @@ export interface Story {
 
 A plain typed TypeScript array. No database, no API, no React Query needed.
 
-```ts
-import type { Story } from "@/lib/types";
-
-export const stories: Story[] = [
-  // ... story objects
-];
-```
-
-The `tags` array on each story drives both tab filtering and multi-competency matching. A story tagged `["conflict", "influence"]` appears under both tabs. There are no "right" tags — tag stories based on what question types they best answer.
+The `tags` array on each story drives both category filtering and multi-competency matching. A story tagged `["conflict", "influence"]` appears under both filters. Tag stories based on what question types they best answer.
 
 ---
 
@@ -99,24 +90,24 @@ The `tags` array on each story drives both tab filtering and multi-competency ma
 - Renders: `<SearchBar>`, `<CategoryTabs>`, result count, list of `<StoryCard>`
 
 ### `CategoryTabs.tsx`
-- Uses shadcn `Tabs`, `TabsList`, `TabsTrigger`
-- Tab labels: All, Leadership, Conflict, Ambiguity, Failure, Cross-functional, Influence, Innovation, Prioritization
-- Wrap in horizontal scroll on mobile so tabs don't wrap to multiple lines
+- A `flex flex-wrap` row of shadcn `Button` components — one per category plus "All"
+- Active filter uses `variant="default"` (filled), inactive use `variant="outline"`
+- Buttons wrap to a second line on narrow screens — no horizontal scrolling
 
 ### `StoryCard.tsx`
 - Uses shadcn `Collapsible`, `CollapsibleTrigger`, `CollapsibleContent`
 - Collapsed state: shows `title`, `hook`, and tag `Badge` components
-- Expanded state: shows STAR fields in a simple two-column layout (label left, content right)
-- STAR labels: Situation, Task, Action, Result — rendered as muted uppercase labels
-- Tags use shadcn `Badge` with `variant="secondary"` — one badge per tag, styled by category color
+- Expanded state: shows STAR fields in a two-column grid (muted uppercase label left, content right)
+- Tags use shadcn `Badge` with `variant="secondary"` — color-coded per category
 
 ### `SearchBar.tsx`
 - shadcn `Input` with a lucide `Search` icon absolutely positioned inside the left padding
 - Clears on Escape key
 
 ### `ThemeToggle.tsx`
-- shadcn `Button` with `variant="ghost"` and `size="icon"`
-- Lucide `Sun` / `Moon` icons toggling via `next-themes` `useTheme`
+- shadcn `Button` with `variant="ghost"`, `size="icon"`, and `className="relative"`
+- The `relative` class is required — without it the absolutely-positioned Moon icon escapes the button bounds and blocks taps on iOS Safari
+- Uses `resolvedTheme` (not `theme`) from `next-themes` to avoid a hydration timing bug where `theme` is `undefined` on first render
 
 ---
 
@@ -131,69 +122,42 @@ This is a utility, not a portfolio piece. Aim for:
 Page structure (top to bottom):
 1. Minimal header: app name left, theme toggle right
 2. Search bar (full width)
-3. Category tabs (horizontal scroll on mobile)
+3. Category filter buttons (wrapping row)
 4. Result count (muted, small — "8 of 10 stories")
 5. Stack of story cards
 
 ---
 
-## shadcn Components to Install
-
-Run these before writing any component code:
+## Development
 
 ```bash
-bunx --bun shadcn@latest add input
-bunx --bun shadcn@latest add tabs
-bunx --bun shadcn@latest add badge
-bunx --bun shadcn@latest add collapsible
-bunx --bun shadcn@latest add button
+bun run dev
 ```
 
-Check `src/components/ui/` after each — shadcn may have already installed some as dependencies.
+### Mobile testing on local network
+
+When accessing the dev server from a phone (e.g. `http://10.76.0.127:3000`), Next.js blocks cross-origin requests to its dev resources by default, which prevents React from hydrating — the page loads but nothing interactive works. The fix is already in place in `next.config.ts`:
+
+```ts
+allowedDevOrigins: ["10.76.0.127"],
+```
+
+If your local network IP changes, update this value.
 
 ---
 
 ## Cloudflare Pages Deployment
 
-Add to `package.json` scripts:
-
-```json
-"pages:build": "bunx @cloudflare/next-on-pages",
-"deploy": "bunx wrangler pages deploy .vercel/output/static"
-```
-
-Create `wrangler.toml` at project root:
-
-```toml
-name = "star-index"
-compatibility_date = "2024-09-23"
-compatibility_flags = ["nodejs_compat"]
-
-[build]
-command = "bun run pages:build"
-```
-
-Add `@cloudflare/next-on-pages` and `wrangler` as dev dependencies:
+Already configured. Scripts in `package.json`:
 
 ```bash
-bun add -d @cloudflare/next-on-pages wrangler
+bun run pages:build   # builds for Cloudflare Edge via @cloudflare/next-on-pages
+bun run deploy        # deploys to Cloudflare Pages via wrangler
 ```
 
-This app has no server-side logic, no Node APIs, and no dynamic routes — it will build cleanly for the Edge Runtime without any special configuration.
+`wrangler.toml` is at the project root. This app has no server-side logic, no Node APIs, and no dynamic routes — it builds cleanly for the Edge Runtime.
 
----
-
-## What "Done" Looks Like
-
-- [ ] Page loads showing all stories
-- [ ] Category tabs filter the list correctly
-- [ ] Keyword search filters across title, hook, and STAR fields
-- [ ] Category + search filters combine (AND logic)
-- [ ] Each card expands/collapses to show/hide STAR detail
-- [ ] Result count updates with filters
-- [ ] Dark mode toggle works and persists (next-themes localStorage)
-- [ ] Responsive: usable on mobile without horizontal scroll (except the tabs row)
-- [ ] `bun run pages:build` completes without errors
+See `README.md` for full Cloudflare Pages setup instructions.
 
 ---
 
