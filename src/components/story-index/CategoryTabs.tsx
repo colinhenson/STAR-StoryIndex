@@ -14,23 +14,32 @@ const CATEGORIES: { value: Category | "all"; label: string }[] = [
 ];
 
 interface CategoryTabsProps {
-  activeCategory: Category | "all";
+  activeCategories: Set<Category>;
   onChange: (category: Category | "all") => void;
+  onHover: (category: Category | null) => void;
 }
 
-export function CategoryTabs({ activeCategory, onChange }: CategoryTabsProps) {
+export function CategoryTabs({ activeCategories, onChange, onHover }: CategoryTabsProps) {
   return (
     <div className="flex flex-wrap gap-2">
-      {CATEGORIES.map((cat) => (
-        <Button
-          key={cat.value}
-          variant={activeCategory === cat.value ? "default" : "outline"}
-          size="sm"
-          onClick={() => onChange(cat.value)}
-        >
-          {cat.label}
-        </Button>
-      ))}
+      {CATEGORIES.map((cat) => {
+        const isActive =
+          cat.value === "all"
+            ? activeCategories.size === 0
+            : activeCategories.has(cat.value);
+        return (
+          <Button
+            key={cat.value}
+            variant={isActive ? "default" : "outline"}
+            size="sm"
+            onClick={() => onChange(cat.value)}
+            onMouseEnter={() => onHover(cat.value === "all" ? null : cat.value)}
+            onMouseLeave={() => onHover(null)}
+          >
+            {cat.label}
+          </Button>
+        );
+      })}
     </div>
   );
 }

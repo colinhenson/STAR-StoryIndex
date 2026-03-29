@@ -25,7 +25,7 @@ src/
     layout.tsx            # Geist font, ThemeProvider, metadata
     page.tsx              # Imports <StoryIndex /> only. No logic here.
   components/
-    providers.tsx         # "use client" ThemeProvider wrapper (next-themes, dark default)
+    providers.tsx         # "use client" ThemeProvider + TooltipProvider wrapper
     story-index/
       StoryIndex.tsx      # "use client" — owns all filter/search state
       StoryCard.tsx       # Single story. Uses shadcn Collapsible to expand STAR detail.
@@ -35,6 +35,8 @@ src/
     ui/                   # shadcn auto-generated components (do not hand-write these)
   data/
     stories.ts            # The ONLY file edited to add/update stories. Typed array of Story objects.
+  hooks/
+    useLocalStorageSet.ts # Custom hook for localStorage-backed Set<number> (favorites, shared)
   lib/
     types.ts              # Story and Category type definitions
     utils.ts              # cn() utility
@@ -84,21 +86,27 @@ The `tags` array on each story drives both category filtering and multi-competen
 ## Component Behavior
 
 ### `StoryIndex.tsx` (client component)
-- State: `activeCategory: Category | "all"` and `searchQuery: string`
-- Filtering logic: a story is shown if (a) its tags include `activeCategory` OR `activeCategory === "all"`, AND (b) the search query appears in title, hook, or any STAR field (case-insensitive)
+- State: `activeCategories: Set<Category>`, `searchQuery: string`, `hoveredCategory: Category | null`
+- Also uses `useLocalStorageSet` for `favorites` and `shared` state (persisted to localStorage)
+- Category filtering: multi-select with AND logic — a story must match ALL selected categories. Empty set = show all.
+- Search filtering: case-insensitive substring match across title, hook, and all STAR fields
 - No URL params needed — this is a personal tool, state doesn't need to persist across sessions
-- Renders: `<SearchBar>`, `<CategoryTabs>`, result count, list of `<StoryCard>`
+- Renders: `<SearchBar>`, `<CategoryTabs>`, result count, list of `<StoryCard>`, and a "Reset shared" icon button (visible when any stories are marked shared)
 
 ### `CategoryTabs.tsx`
 - A `flex flex-wrap` row of shadcn `Button` components — one per category plus "All"
-- Active filter uses `variant="default"` (filled), inactive use `variant="outline"`
+- Supports multi-select: multiple category buttons can be active (filled) simultaneously
+- "All" button is active when no categories are selected; clicking it clears the selection
+- Fires `onHover` with the hovered category (or `null`) for badge highlighting in story cards
 - Buttons wrap to a second line on narrow screens — no horizontal scrolling
 
 ### `StoryCard.tsx`
 - Uses shadcn `Collapsible`, `CollapsibleTrigger`, `CollapsibleContent`
-- Collapsed state: shows `title`, `hook`, and tag `Badge` components
+- Collapsed state: shows checkbox (left), title, hook, tag badges with favorite star, and chevron
+- The checkbox and star sit **outside** the `CollapsibleTrigger` so clicks don't toggle expand/collapse (use `stopPropagation` and `preventDefault`)
 - Expanded state: shows STAR fields in a two-column grid (muted uppercase label left, content right)
-- Tags use shadcn `Badge` with `variant="secondary"` — color-coded per category
+- Tags use shadcn `Badge` with `variant="secondary"` — badges matching `hoveredCategory` switch to `variant="default"`
+- Shared stories get `opacity-50` dimming on the entire card
 
 ### `SearchBar.tsx`
 - shadcn `Input` with a lucide `Search` icon absolutely positioned inside the left padding
@@ -120,7 +128,7 @@ This is a utility, not a portfolio piece. Aim for:
 - No hero sections, no marketing copy, no decoration
 
 Page structure (top to bottom):
-1. Minimal header: app name left, theme toggle right
+1. Minimal header: app name left, reset-shared icon button + theme toggle right
 2. Search bar (full width)
 3. Category filter buttons (wrapping row)
 4. Result count (muted, small — "8 of 10 stories")

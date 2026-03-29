@@ -1,26 +1,16 @@
 "use client";
 
 import { useState, Fragment } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Star } from "lucide-react";
 import {
   Collapsible,
   CollapsibleTrigger,
   CollapsibleContent,
 } from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import type { Story, Category } from "@/lib/types";
-
-const categoryColors: Record<Category, string> = {
-  leadership: "bg-blue-500/15 text-blue-700 dark:text-blue-300",
-  conflict: "bg-red-500/15 text-red-700 dark:text-red-300",
-  ambiguity: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
-  failure: "bg-orange-500/15 text-orange-700 dark:text-orange-300",
-  "cross-functional": "bg-violet-500/15 text-violet-700 dark:text-violet-300",
-  influence: "bg-cyan-500/15 text-cyan-700 dark:text-cyan-300",
-  innovation: "bg-green-500/15 text-green-700 dark:text-green-300",
-  prioritization: "bg-pink-500/15 text-pink-700 dark:text-pink-300",
-};
 
 const STAR_FIELDS: { key: keyof Story["star"]; label: string }[] = [
   { key: "situation", label: "Situation" },
@@ -29,35 +19,95 @@ const STAR_FIELDS: { key: keyof Story["star"]; label: string }[] = [
   { key: "result", label: "Result" },
 ];
 
-export function StoryCard({ story }: { story: Story }) {
+interface StoryCardProps {
+  story: Story;
+  isFavorite: boolean;
+  isShared: boolean;
+  onToggleFavorite: () => void;
+  onToggleShared: () => void;
+  hoveredCategory: Category | null;
+}
+
+export function StoryCard({
+  story,
+  isFavorite,
+  isShared,
+  onToggleFavorite,
+  onToggleShared,
+  hoveredCategory,
+}: StoryCardProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
-      <div className="rounded-lg border border-border bg-card text-card-foreground">
-        <CollapsibleTrigger className="w-full text-left p-4 flex items-start justify-between gap-3 hover:bg-muted/50 transition-colors rounded-lg">
-          <div className="flex flex-col gap-2 min-w-0">
-            <span className="font-medium text-sm leading-snug">{story.title}</span>
-            <span className="text-sm text-muted-foreground leading-snug">{story.hook}</span>
-            <div className="flex flex-wrap gap-1">
-              {story.tags.map((tag) => (
-                <Badge
-                  key={tag}
-                  variant="secondary"
-                  className={cn("text-xs font-normal border-0", categoryColors[tag])}
-                >
-                  {tag}
-                </Badge>
-              ))}
-            </div>
+      <div
+        className={cn(
+          "rounded-lg border border-border bg-card text-card-foreground transition-opacity",
+          isShared && "opacity-50"
+        )}
+      >
+        <div className="flex items-start gap-3 p-4">
+          {/* Shared checkbox — outside trigger */}
+          <div
+            className="shrink-0 mt-0.5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Checkbox
+              checked={isShared}
+              onCheckedChange={onToggleShared}
+              aria-label="Mark as shared"
+            />
           </div>
-          <ChevronDown
-            className={cn(
-              "h-4 w-4 shrink-0 mt-0.5 text-muted-foreground transition-transform duration-200",
-              open && "rotate-180"
-            )}
-          />
-        </CollapsibleTrigger>
+
+          {/* Collapsible trigger wraps only the text content */}
+          <CollapsibleTrigger className="flex-1 text-left flex items-start justify-between gap-3 hover:bg-muted/50 -m-1 p-1 rounded transition-colors min-w-0">
+            <div className="flex flex-col gap-2 min-w-0">
+              <span className="font-medium text-sm leading-snug">
+                {story.title}
+              </span>
+              <span className="text-sm text-muted-foreground leading-snug">
+                {story.hook}
+              </span>
+              <div className="flex flex-wrap items-center gap-1">
+                {/* Favorite star — outside trigger */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    onToggleFavorite();
+                  }}
+                  aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+                  className="shrink-0"
+                >
+                  <Star
+                    className={cn(
+                      "h-4 w-4 transition-colors",
+                      isFavorite
+                        ? "fill-primary text-primary"
+                        : "text-input hover:text-primary"
+                    )}
+                  />
+                </button>
+                {story.tags.map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant={hoveredCategory === tag ? "default" : "secondary"}
+                    className="text-xs font-normal transition-colors"
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 shrink-0 mt-0.5 text-muted-foreground transition-transform duration-200",
+                open && "rotate-180"
+              )}
+            />
+          </CollapsibleTrigger>
+        </div>
 
         <CollapsibleContent>
           <div className="px-4 pb-4 border-t border-border mt-0 pt-4">
