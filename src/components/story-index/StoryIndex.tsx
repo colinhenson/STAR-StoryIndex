@@ -18,6 +18,7 @@ import { StoryCard } from "./StoryCard";
 
 export function StoryIndex() {
   const [activeCategories, setActiveCategories] = useState<Set<Category>>(new Set());
+  const [filterFavorites, setFilterFavorites] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [hoveredCategory, setHoveredCategory] = useState<Category | null>(null);
   const [favorites, toggleFavorite] = useLocalStorageSet("star-favorites");
@@ -26,6 +27,7 @@ export function StoryIndex() {
   const toggleCategory = (category: Category | "all") => {
     if (category === "all") {
       setActiveCategories(new Set());
+      setFilterFavorites(false);
       return;
     }
     const next = new Set(activeCategories);
@@ -38,6 +40,8 @@ export function StoryIndex() {
   };
 
   const filtered = stories.filter((story) => {
+    if (filterFavorites && !favorites.has(story.id)) return false;
+
     const matchesCategory =
       activeCategories.size === 0 ||
       [...activeCategories].every((cat) => story.tags.includes(cat));
@@ -84,7 +88,7 @@ export function StoryIndex() {
 
         {/* Tabs + result count — sticky */}
         <div className="sticky top-0 z-10 bg-background py-3 -my-3 flex flex-col gap-4">
-          <CategoryTabs activeCategories={activeCategories} onChange={toggleCategory} onHover={setHoveredCategory} />
+          <CategoryTabs activeCategories={activeCategories} filterFavorites={filterFavorites} onToggleFavorites={() => setFilterFavorites((v) => !v)} onChange={toggleCategory} onHover={setHoveredCategory} />
           <p className="text-xs text-muted-foreground">
             {filtered.length} of {stories.length} stories
           </p>
