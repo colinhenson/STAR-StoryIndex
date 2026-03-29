@@ -1,6 +1,8 @@
 name = "star-index"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
+main = ".open-next/worker.js"
 
-[build]
-command = "bun run pages:build"
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
