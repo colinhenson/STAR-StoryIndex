@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Alegreya, Alegreya_Sans } from "next/font/google";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const alegreyaSans = Alegreya_Sans({
+  weight: ["400", "500", "700"],
+  variable: "--font-alegreya-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const alegreya = Alegreya({
+  weight: ["400", "500", "700"],
+  variable: "--font-alegreya",
   subsets: ["latin"],
 });
 
@@ -27,7 +29,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable}`}
+      className={`${alegreyaSans.variable} ${alegreya.variable}`}
     >
       <body>
         <Providers>{children}</Providers>

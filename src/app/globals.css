@@ -7,8 +7,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-alegreya-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-alegreya), ui-serif, Georgia, serif;
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -75,6 +75,9 @@
 }
 
 @layer base {
+  html {
+    font-size: 17px;
+  }
   * {
     @apply border-border outline-ring/50;
   }

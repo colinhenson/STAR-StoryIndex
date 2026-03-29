@@ -62,10 +62,10 @@ export function StoryCard({
           {/* Collapsible trigger wraps only the text content */}
           <CollapsibleTrigger className="flex-1 text-left flex items-start justify-between gap-3 -m-1 p-1 rounded min-w-0">
             <div className="flex flex-col gap-2 min-w-0">
-              <span className="font-medium text-sm leading-snug">
+              <h3 className="font-serif font-semibold text-base leading-snug">
                 {story.title}
-              </span>
-              <span className="text-sm text-muted-foreground leading-snug">
+              </h3>
+              <span className="font-serif text-sm text-muted-foreground leading-snug">
                 {story.hook}
               </span>
               <div className="flex flex-wrap items-center gap-1">
@@ -118,14 +118,14 @@ export function StoryCard({
         </div>
 
         <CollapsibleContent>
-          <div className="px-4 pb-4 border-t border-border mt-0 pt-4">
+          <div className="px-4 sm:pl-[calc(1rem+1rem+0.75rem)] pb-4 border-t border-border mt-0 pt-4">
             <div className="grid grid-cols-[6rem_1fr] gap-x-4 gap-y-3">
               {STAR_FIELDS.map(({ key, label }) => (
                 <Fragment key={key}>
-                  <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground pt-0.5">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground pt-1">
                     {label}
                   </span>
-                  <span className="text-sm leading-relaxed">
+                  <span className="font-serif text-sm leading-relaxed max-w-[58ch]">
                     {story.star[key]}
                   </span>
                 </Fragment>
