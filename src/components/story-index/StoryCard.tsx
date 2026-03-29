@@ -70,15 +70,23 @@ export function StoryCard({
               </span>
               <div className="flex flex-wrap items-center gap-1">
                 {/* Favorite star — outside trigger */}
-                <button
-                  type="button"
+                <span
+                  role="button"
+                  tabIndex={0}
                   onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
                     onToggleFavorite();
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      onToggleFavorite();
+                    }
+                  }}
                   aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-                  className="shrink-0"
+                  className="shrink-0 cursor-pointer"
                 >
                   <Star
                     className={cn(
@@ -88,7 +96,7 @@ export function StoryCard({
                         : "text-input hover:text-primary"
                     )}
                   />
-                </button>
+                </span>
                 {story.tags.map((tag) => (
                   <Badge
                     key={tag}
