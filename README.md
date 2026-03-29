@@ -48,7 +48,7 @@ This project is configured for deployment to [Cloudflare Pages](https://pages.cl
 ### Connect your repo
 
 1. Push this repo to GitHub
-2. In the Cloudflare dashboard, go to **Workers & Pages → Create → Pages → Connect to Git**
+2. In the Cloudflare dashboard, go to **Compute → Workers & Pages → Create application → Looking to deploy Pages? Get started (bottom of the page) → Get started**
 3. Select your repo
 4. Set the build configuration:
    - **Build command:** `bun run pages:build`
