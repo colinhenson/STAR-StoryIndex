@@ -60,7 +60,7 @@ export function StoryCard({
           </div>
 
           {/* Collapsible trigger wraps only the text content */}
-          <CollapsibleTrigger className="flex-1 text-left flex items-start justify-between gap-3 hover:bg-muted/50 -m-1 p-1 rounded transition-colors min-w-0">
+          <CollapsibleTrigger className="flex-1 text-left flex items-start justify-between gap-3 -m-1 p-1 rounded min-w-0">
             <div className="flex flex-col gap-2 min-w-0">
               <span className="font-medium text-sm leading-snug">
                 {story.title}

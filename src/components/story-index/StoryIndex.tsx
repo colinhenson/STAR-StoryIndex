@@ -82,13 +82,13 @@ export function StoryIndex() {
         {/* Search */}
         <SearchBar value={searchQuery} onChange={setSearchQuery} />
 
-        {/* Tabs */}
-        <CategoryTabs activeCategories={activeCategories} onChange={toggleCategory} onHover={setHoveredCategory} />
-
-        {/* Result count */}
-        <p className="text-xs text-muted-foreground">
-          {filtered.length} of {stories.length} stories
-        </p>
+        {/* Tabs + result count — sticky */}
+        <div className="sticky top-0 z-10 bg-background py-3 -my-3 flex flex-col gap-4">
+          <CategoryTabs activeCategories={activeCategories} onChange={toggleCategory} onHover={setHoveredCategory} />
+          <p className="text-xs text-muted-foreground">
+            {filtered.length} of {stories.length} stories
+          </p>
+        </div>
 
         {/* Story list */}
         <div className="flex flex-col gap-3">
