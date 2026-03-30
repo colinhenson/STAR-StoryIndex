@@ -3,16 +3,16 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Category } from "@/lib/types";
 
-const CATEGORIES: { value: Category | "all"; label: string }[] = [
+const CATEGORIES: { value: Category | "all"; label: string; emoji?: string }[] = [
   { value: "all", label: "All" },
-  { value: "leadership", label: "Leadership" },
-  { value: "conflict", label: "Conflict" },
-  { value: "ambiguity", label: "Ambiguity" },
-  { value: "failure", label: "Failure" },
-  { value: "cross-functional", label: "Cross-functional" },
-  { value: "influence", label: "Influence" },
-  { value: "innovation", label: "Innovation" },
-  { value: "prioritization", label: "Prioritization" },
+  { value: "leadership", label: "Leadership", emoji: "👑" },
+  { value: "conflict", label: "Conflict", emoji: "⚔️" },
+  { value: "ambiguity", label: "Ambiguity", emoji: "🤷‍♂️" },
+  { value: "failure", label: "Failure", emoji: "💥" },
+  { value: "cross-functional", label: "Cross-functional", emoji: "🙌" },
+  { value: "influence", label: "Influence", emoji: "🎯" },
+  { value: "innovation", label: "Innovation", emoji: "💡" },
+  { value: "prioritization", label: "Prioritization", emoji: "⚖️" },
 ];
 
 interface CategoryTabsProps {
@@ -55,7 +55,7 @@ export function CategoryTabs({ activeCategories, filterFavorites, onToggleFavori
             onMouseEnter={() => onHover(cat.value as Category)}
             onMouseLeave={() => onHover(null)}
           >
-            {cat.label}
+            {cat.emoji} {cat.label}
           </Button>
         );
       })}
