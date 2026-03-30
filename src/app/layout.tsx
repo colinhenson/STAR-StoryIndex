@@ -31,7 +31,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${alegreyaSans.variable} ${alegreya.variable}`}
     >
-      <body>
+      <body suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

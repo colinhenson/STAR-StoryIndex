@@ -63,9 +63,9 @@ export function StoryIndex() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-2xl px-4 py-6 flex flex-col gap-4">
+      <div className="mx-auto max-w-2xl px-4 pt-4 pb-6 flex flex-col gap-4">
         {/* Header */}
-        <header className="flex items-center justify-between">
+        <header className="flex items-center justify-between -mb-2">
           <h1 className="text-lg font-semibold tracking-tight font-serif">STAR Stories</h1>
           <div className="flex items-center gap-1">
             {shared.size > 0 && (

@@ -45,16 +45,20 @@ Available tags: `leadership`, `conflict`, `ambiguity`, `failure`, `cross-functio
 
 This project is configured for deployment to [Cloudflare Pages](https://pages.cloudflare.com) via [`@cloudflare/next-on-pages`](https://github.com/cloudflare/next-on-pages).
 
+> **Note:** `@cloudflare/next-on-pages` requires Next.js 15. Do not upgrade to Next.js 16+ without migrating to `@opennextjs/cloudflare` (which uses Cloudflare Workers instead of Pages).
+
 ### Connect your repo
 
 1. Push this repo to GitHub
-2. In the Cloudflare dashboard, go to **Compute → Workers & Pages → Create application → Looking to deploy Pages? Get started (bottom of the page) → Get started**
+2. In the Cloudflare dashboard, go to **Compute (Workers & Pages) → Create → Pages → Connect to Git**
 3. Select your repo
 4. Set the build configuration:
+   - **Framework preset:** None
    - **Build command:** `bun run pages:build`
    - **Build output directory:** `.vercel/output/static`
    - **Environment variable:** `NODE_VERSION` = `20`
 5. Deploy
+6. After the first deploy, go to **Settings → Functions → Compatibility Flags** and add `nodejs_compat` to Production (and Preview if available), then redeploy
 
 Cloudflare Pages will automatically redeploy on every push to `main`.
 
