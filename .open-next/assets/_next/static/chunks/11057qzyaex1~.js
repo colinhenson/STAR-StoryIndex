@@ -1,0 +1,1 @@
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,1661,e=>{"use strict";var r=e.i(43476),i=e.i(63178),t=e.i(46798);e.s(["Providers",0,function({children:e}){return(0,r.jsx)(i.ThemeProvider,{attribute:"class",defaultTheme:"dark",enableSystem:!1,children:(0,r.jsx)(t.TooltipProvider,{children:e})})}])}]);
